@@ -1,0 +1,26 @@
+name: CLDAC
+version: '${version}'
+main: fr.cldac.anticheat.CLDAC
+author: CLD
+description: Advanced Anti-Cheat for Minecraft servers (1.8 - 1.21+)
+softdepend:
+  - ProtocolLib
+
+commands:
+  cldac:
+    description: CLDAC Anti-Cheat main command
+    usage: /cldac <alerts|info|toggle|reload>
+    permission: cldac.admin
+    aliases:
+      - ac
+
+permissions:
+  cldac.admin:
+    description: Access to CLDAC admin commands
+    default: op
+  cldac.alerts:
+    description: Receive anti-cheat alerts
+    default: op
+  cldac.bypass:
+    description: Bypass all anti-cheat checks
+    default: false
