@@ -27,12 +27,16 @@ public class FlyA extends MovementCheck {
     @Override
     public void onMove() {
         Player player = playerData.getPlayer();
-        if (player == null) return;
-        if (player.isFlying() || player.getAllowFlight()) return;
-        if (VersionUtil.isInVehicle(player)) return;
+        if (player == null)
+            return;
+        if (player.isFlying() || player.getAllowFlight())
+            return;
+        if (VersionUtil.isInVehicle(player))
+            return;
 
         // Check for exempt conditions
-        if (isExempt(player)) return;
+        if (isExempt(player))
+            return;
 
         int airTicks = playerData.getAirTicks();
 
@@ -43,15 +47,21 @@ public class FlyA extends MovementCheck {
 
     private boolean isExempt(Player player) {
         Location loc = playerData.getCurrentLocation();
-        if (loc == null) return true;
+        if (loc == null)
+            return true;
+        if (!VersionUtil.isChunkLoaded(loc))
+            return true;
 
         // Check blocks around player for climbable/liquid
         Block current = loc.getBlock();
         Block below = loc.clone().subtract(0, 0.5, 0).getBlock();
 
-        if (VersionUtil.isLiquid(current) || VersionUtil.isLiquid(below)) return true;
-        if (VersionUtil.isClimbable(current.getType())) return true;
-        if (VersionUtil.isWeb(current.getType())) return true;
+        if (VersionUtil.isLiquid(current) || VersionUtil.isLiquid(below))
+            return true;
+        if (VersionUtil.isClimbable(current.getType()))
+            return true;
+        if (VersionUtil.isWeb(current.getType()))
+            return true;
 
         // Check for levitation/slow falling (1.13+)
         for (PotionEffect effect : player.getActivePotionEffects()) {
@@ -62,13 +72,16 @@ public class FlyA extends MovementCheck {
         }
 
         // Pending velocity (knockback)
-        if (playerData.isPendingVelocity() && playerData.getVelocityTicks() < 20) return true;
+        if (playerData.isPendingVelocity() && playerData.getVelocityTicks() < 20)
+            return true;
 
         // Riptide/elytra (1.9+)
-        if (VersionUtil.isGliding(player)) return true;
+        if (VersionUtil.isGliding(player))
+            return true;
 
         // Check if near bouncy blocks
-        if (VersionUtil.isBouncy(below.getType())) return true;
+        if (VersionUtil.isBouncy(below.getType()))
+            return true;
 
         return false;
     }

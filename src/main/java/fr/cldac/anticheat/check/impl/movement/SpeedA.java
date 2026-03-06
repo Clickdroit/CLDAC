@@ -36,23 +36,34 @@ public class SpeedA extends MovementCheck {
     @Override
     public void onMove() {
         Player player = playerData.getPlayer();
-        if (player == null) return;
-        if (player.isFlying() || player.getAllowFlight()) return;
-        if (VersionUtil.isInVehicle(player)) return;
-        if (playerData.getDeltaXZ() < 0.1) return;
+        if (player == null)
+            return;
+        if (player.isFlying() || player.getAllowFlight())
+            return;
+        if (VersionUtil.isInVehicle(player))
+            return;
+        if (playerData.getDeltaXZ() < 0.1)
+            return;
 
         // Skip in liquids (handled differently)
         Location loc = playerData.getCurrentLocation();
-        if (loc != null) {
+        if (loc != null && VersionUtil.isChunkLoaded(loc)) {
             Block atFeet = loc.getBlock();
-            Block below = loc.clone().subtract(0, 0.5, 0).getBlock();
-            if (VersionUtil.isLiquid(atFeet) || VersionUtil.isLiquid(below)) return;
-            if (VersionUtil.isWeb(atFeet.getType())) return;
-            if (VersionUtil.isClimbable(atFeet.getType())) return;
+            Location belowLoc = loc.clone().subtract(0, 0.5, 0);
+            if (VersionUtil.isChunkLoaded(belowLoc)) {
+                Block below = belowLoc.getBlock();
+                if (VersionUtil.isLiquid(atFeet) || VersionUtil.isLiquid(below))
+                    return;
+            }
+            if (VersionUtil.isWeb(atFeet.getType()))
+                return;
+            if (VersionUtil.isClimbable(atFeet.getType()))
+                return;
         }
 
         // Skip during pending velocity
-        if (playerData.isPendingVelocity() && playerData.getVelocityTicks() < 15) return;
+        if (playerData.isPendingVelocity() && playerData.getVelocityTicks() < 15)
+            return;
 
         double maxSpeed = calculateMaxSpeed(player);
         double deltaXZ = playerData.getDeltaXZ();
@@ -108,25 +119,28 @@ public class SpeedA extends MovementCheck {
         // Block-specific modifiers
         Location loc = playerData.getCurrentLocation();
         if (loc != null) {
-            Block below = loc.clone().subtract(0, 1, 0).getBlock();
+            Location belowLoc = loc.clone().subtract(0, 1, 0);
+            if (VersionUtil.isChunkLoaded(belowLoc)) {
+                Block below = belowLoc.getBlock();
 
-            // Ice = very low friction, much higher speed
-            if (VersionUtil.isIce(below.getType())) {
-                base *= 2.5;
-                // Blue ice even more slippery (1.13+)
-                if (below.getType().name().equals("BLUE_ICE")) {
-                    base *= 1.3;
+                // Ice = very low friction, much higher speed
+                if (VersionUtil.isIce(below.getType())) {
+                    base *= 2.5;
+                    // Blue ice even more slippery (1.13+)
+                    if (below.getType().name().equals("BLUE_ICE")) {
+                        base *= 1.3;
+                    }
                 }
-            }
 
-            // Soul sand slowdown
-            if (VersionUtil.isSoulSand(below.getType()) && playerData.isOnGround()) {
-                base *= 0.4;
-            }
+                // Soul sand slowdown
+                if (VersionUtil.isSoulSand(below.getType()) && playerData.isOnGround()) {
+                    base *= 0.4;
+                }
 
-            // Slime block bounce momentum
-            if (VersionUtil.isBouncy(below.getType())) {
-                base *= 1.5;
+                // Slime block bounce momentum
+                if (VersionUtil.isBouncy(below.getType())) {
+                    base *= 1.5;
+                }
             }
         }
 

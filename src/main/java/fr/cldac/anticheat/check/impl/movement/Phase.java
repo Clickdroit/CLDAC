@@ -11,7 +11,8 @@ import org.bukkit.util.Vector;
 
 /**
  * Phase - Detects no-clip/phase through solid blocks.
- * Checks if the player's path between two positions intersects with solid blocks.
+ * Checks if the player's path between two positions intersects with solid
+ * blocks.
  */
 public class Phase extends MovementCheck {
 
@@ -22,18 +23,24 @@ public class Phase extends MovementCheck {
     @Override
     public void onMove() {
         Player player = playerData.getPlayer();
-        if (player == null) return;
-        if (player.isFlying()) return;
-        if (VersionUtil.isInVehicle(player)) return;
+        if (player == null)
+            return;
+        if (player.isFlying())
+            return;
+        if (VersionUtil.isInVehicle(player))
+            return;
 
         Location from = playerData.getLastLocation();
         Location to = playerData.getCurrentLocation();
-        if (from == null || to == null) return;
-        if (!from.getWorld().equals(to.getWorld())) return;
+        if (from == null || to == null)
+            return;
+        if (!from.getWorld().equals(to.getWorld()))
+            return;
 
         // Only check meaningful movements
         double distSq = from.distanceSquared(to);
-        if (distSq < 0.25 || distSq > 100) return; // Too small or likely teleport
+        if (distSq < 0.25 || distSq > 100)
+            return; // Too small or likely teleport
 
         // Sample points along the path and check for solid blocks
         Vector direction = to.toVector().subtract(from.toVector());
@@ -46,6 +53,12 @@ public class Phase extends MovementCheck {
             double x = from.getX() + direction.getX() * length * t;
             double y = from.getY() + direction.getY() * length * t + 0.5; // Check at body height
             double z = from.getZ() + direction.getZ() * length * t;
+
+            // Skip if chunk not loaded to avoid async chunk loading
+            int chunkX = (int) Math.floor(x) >> 4;
+            int chunkZ = (int) Math.floor(z) >> 4;
+            if (!from.getWorld().isChunkLoaded(chunkX, chunkZ))
+                continue;
 
             Block block = from.getWorld().getBlockAt((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
             if (block.getType().isSolid() && !VersionUtil.isSlab(block.getType())

@@ -9,7 +9,8 @@ import org.bukkit.entity.Player;
 
 /**
  * FlyB - Detects altitude gain without legitimate source.
- * Flags when player gains altitude consistently while not on ground / no velocity.
+ * Flags when player gains altitude consistently while not on ground / no
+ * velocity.
  */
 public class FlyB extends MovementCheck {
 
@@ -22,22 +23,32 @@ public class FlyB extends MovementCheck {
     @Override
     public void onMove() {
         Player player = playerData.getPlayer();
-        if (player == null) return;
-        if (player.isFlying() || player.getAllowFlight()) return;
-        if (VersionUtil.isInVehicle(player)) return;
+        if (player == null)
+            return;
+        if (player.isFlying() || player.getAllowFlight())
+            return;
+        if (VersionUtil.isInVehicle(player))
+            return;
 
         Location loc = playerData.getCurrentLocation();
-        if (loc == null) return;
+        if (loc == null)
+            return;
+        if (!VersionUtil.isChunkLoaded(loc))
+            return;
 
         // Exempt if in liquid or on climbable
-        if (VersionUtil.isLiquid(loc.getBlock())) return;
-        if (VersionUtil.isClimbable(loc.getBlock().getType())) return;
+        if (VersionUtil.isLiquid(loc.getBlock()))
+            return;
+        if (VersionUtil.isClimbable(loc.getBlock().getType()))
+            return;
 
         // Exempt if pending velocity
-        if (playerData.isPendingVelocity() && playerData.getVelocityTicks() < 15) return;
+        if (playerData.isPendingVelocity() && playerData.getVelocityTicks() < 15)
+            return;
 
         // Exempt if gliding (1.9+)
-        if (VersionUtil.isGliding(player)) return;
+        if (VersionUtil.isGliding(player))
+            return;
 
         double deltaY = playerData.getDeltaY();
 

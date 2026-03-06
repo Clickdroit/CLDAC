@@ -10,7 +10,8 @@ import org.bukkit.entity.Player;
 
 /**
  * Jesus - Detects walking on water/lava.
- * Flags when player moves horizontally on top of liquid without being in a boat.
+ * Flags when player moves horizontally on top of liquid without being in a
+ * boat.
  */
 public class Jesus extends MovementCheck {
 
@@ -23,12 +24,18 @@ public class Jesus extends MovementCheck {
     @Override
     public void onMove() {
         Player player = playerData.getPlayer();
-        if (player == null) return;
-        if (player.isFlying() || player.getAllowFlight()) return;
-        if (VersionUtil.isInVehicle(player)) return;
+        if (player == null)
+            return;
+        if (player.isFlying() || player.getAllowFlight())
+            return;
+        if (VersionUtil.isInVehicle(player))
+            return;
 
         Location loc = playerData.getCurrentLocation();
-        if (loc == null) return;
+        if (loc == null)
+            return;
+        if (!VersionUtil.isChunkLoaded(loc))
+            return;
 
         Block below = loc.clone().subtract(0, 0.3, 0).getBlock();
         Block atFeet = loc.getBlock();

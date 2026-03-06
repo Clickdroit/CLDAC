@@ -1,7 +1,9 @@
 package fr.cldac.anticheat.util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -20,7 +22,8 @@ public final class VersionUtil {
         MINOR_VERSION = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
     }
 
-    private VersionUtil() {}
+    private VersionUtil() {
+    }
 
     public static int getMajorVersion() {
         return MAJOR_VERSION;
@@ -34,7 +37,8 @@ public final class VersionUtil {
      * Checks if the server is running at least a given Minecraft version.
      */
     public static boolean isAtLeast(int major, int minor) {
-        if (MAJOR_VERSION > major) return true;
+        if (MAJOR_VERSION > major)
+            return true;
         return MAJOR_VERSION == major && MINOR_VERSION >= minor;
     }
 
@@ -119,6 +123,20 @@ public final class VersionUtil {
     }
 
     /**
+     * Check if the chunk at the given location is already loaded.
+     * This MUST be called before using Location.getBlock() from async threads
+     * (e.g. packet listeners) to avoid AsyncCatcher exceptions.
+     */
+    public static boolean isChunkLoaded(Location loc) {
+        if (loc == null)
+            return false;
+        World world = loc.getWorld();
+        if (world == null)
+            return false;
+        return world.isChunkLoaded(loc.getBlockX() >> 4, loc.getBlockZ() >> 4);
+    }
+
+    /**
      * Check if material is a slime block or honey block.
      */
     public static boolean isBouncy(Material material) {
@@ -137,7 +155,8 @@ public final class VersionUtil {
      * Check if a player is gliding (elytra). Uses reflection for 1.8 compatibility.
      */
     public static boolean isGliding(Player player) {
-        if (!isAtLeast(1, 9)) return false;
+        if (!isAtLeast(1, 9))
+            return false;
         try {
             java.lang.reflect.Method method = player.getClass().getMethod("isGliding");
             return (boolean) method.invoke(player);

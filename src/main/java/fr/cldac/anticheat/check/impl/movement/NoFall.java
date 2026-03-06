@@ -27,20 +27,34 @@ public class NoFall extends MovementCheck {
     @Override
     public void onMove() {
         Player player = playerData.getPlayer();
-        if (player == null) return;
-        if (player.isFlying() || player.getAllowFlight()) return;
-        if (VersionUtil.isInVehicle(player)) return;
+        if (player == null)
+            return;
+        if (player.isFlying() || player.getAllowFlight())
+            return;
+        if (VersionUtil.isInVehicle(player))
+            return;
 
         Location loc = playerData.getCurrentLocation();
-        if (loc == null) return;
+        if (loc == null)
+            return;
+        if (!VersionUtil.isChunkLoaded(loc))
+            return;
 
         // Exempt conditions
-        if (VersionUtil.isLiquid(loc.getBlock())) return;
-        if (VersionUtil.isLiquid(loc.clone().subtract(0, 0.5, 0).getBlock())) return;
-        if (VersionUtil.isClimbable(loc.getBlock().getType())) return;
-        if (VersionUtil.isWeb(loc.getBlock().getType())) return;
-        if (VersionUtil.isBouncy(loc.clone().subtract(0, 1, 0).getBlock().getType())) return;
-        if (VersionUtil.isGliding(player)) return;
+        if (VersionUtil.isLiquid(loc.getBlock()))
+            return;
+        Location belowHalf = loc.clone().subtract(0, 0.5, 0);
+        if (VersionUtil.isChunkLoaded(belowHalf) && VersionUtil.isLiquid(belowHalf.getBlock()))
+            return;
+        if (VersionUtil.isClimbable(loc.getBlock().getType()))
+            return;
+        if (VersionUtil.isWeb(loc.getBlock().getType()))
+            return;
+        Location belowOne = loc.clone().subtract(0, 1, 0);
+        if (VersionUtil.isChunkLoaded(belowOne) && VersionUtil.isBouncy(belowOne.getBlock().getType()))
+            return;
+        if (VersionUtil.isGliding(player))
+            return;
 
         // === Check 1: Ground spoof detection ===
         // Player says they're on ground, but there's no solid block below
@@ -48,8 +62,13 @@ public class NoFall extends MovementCheck {
             Location below = loc.clone().subtract(0, 0.1, 0);
             Location belowMore = loc.clone().subtract(0, 0.5, 0);
 
-            boolean hasSolidBelow = VersionUtil.isSolid(below.getBlock())
-                    || VersionUtil.isSolid(belowMore.getBlock());
+            boolean hasSolidBelow = false;
+            if (VersionUtil.isChunkLoaded(below)) {
+                hasSolidBelow = VersionUtil.isSolid(below.getBlock());
+            }
+            if (!hasSolidBelow && VersionUtil.isChunkLoaded(belowMore)) {
+                hasSolidBelow = VersionUtil.isSolid(belowMore.getBlock());
+            }
 
             if (!hasSolidBelow && playerData.getFallDistance() > 2.0) {
                 buffer += 2.0;
@@ -85,7 +104,8 @@ public class NoFall extends MovementCheck {
         }
 
         // === Check 4: Consistent microjumps to avoid fall death ===
-        // Pattern: ground -> tiny jump -> ground -> tiny jump (never accumulating enough fall distance)
+        // Pattern: ground -> tiny jump -> ground -> tiny jump (never accumulating
+        // enough fall distance)
         if (playerData.isOnGround() && playerData.isLastOnGround()
                 && playerData.getLastDeltaY() > 0 && playerData.getLastDeltaY() < 0.01
                 && playerData.getAirTicks() == 0) {

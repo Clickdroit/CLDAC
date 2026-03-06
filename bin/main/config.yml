@@ -1,0 +1,128 @@
+# ========================================
+# CLDAC Anti-Cheat Configuration
+# ========================================
+
+# General settings
+general:
+  prefix: "&8[&c&lCLDAC&8] &7"
+  # Minimum TPS before disabling checks (prevents false positives on lag)
+  min-tps: 18.0
+  # Alert cooldown per check per player (in milliseconds)
+  alert-cooldown: 3000
+
+# ========================================
+# Movement Checks
+# ========================================
+checks:
+  movement:
+    speed-a:
+      enabled: true
+      max-violations: 15
+      # Extra tolerance for speed (blocks/tick)
+      tolerance: 0.05
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (Speed)"
+    speed-b:
+      enabled: true
+      max-violations: 10
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (Speed)"
+    fly-a:
+      enabled: true
+      max-violations: 20
+      # Max airborne ticks before flagging
+      max-air-ticks: 40
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (Fly)"
+    fly-b:
+      enabled: true
+      max-violations: 15
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (Fly)"
+    nofall:
+      enabled: true
+      max-violations: 10
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (NoFall)"
+    jesus:
+      enabled: true
+      max-violations: 10
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (Jesus)"
+    phase:
+      enabled: true
+      max-violations: 5
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (Phase)"
+
+  # ========================================
+  # Combat Checks
+  # ========================================
+  combat:
+    killaura:
+      enabled: true
+      max-violations: 15
+      # Max yaw change per tick that is considered legit
+      max-yaw-rate: 50.0
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (KillAura)"
+    reach:
+      enabled: true
+      max-violations: 15
+      # Max reach in blocks (vanilla = 3.0, we add latency buffer)
+      max-reach: 3.5
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (Reach)"
+    autoclicker:
+      enabled: true
+      max-violations: 10
+      # Maximum CPS allowed
+      max-cps: 18
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (AutoClicker)"
+    velocity:
+      enabled: true
+      max-violations: 15
+      # Minimum percentage of knockback the player should take (0-100)
+      min-velocity-percent: 65
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (Velocity)"
+    criticals:
+      enabled: true
+      max-violations: 10
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (Criticals)"
+
+  # ========================================
+  # Player Checks
+  # ========================================
+  player:
+    noslowdown:
+      enabled: true
+      max-violations: 10
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (NoSlowdown)"
+    scaffold:
+      enabled: true
+      max-violations: 10
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (Scaffold)"
+    inventorymove:
+      enabled: true
+      max-violations: 8
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (InventoryMove)"
+    badpackets:
+      enabled: true
+      max-violations: 5
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (BadPackets)"
+    nametags:
+      enabled: true
+      max-violations: 10
+      # Distance beyond which nametag tracking is suspicious (blocks)
+      max-tracking-distance: 30.0
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (NameTags)"
+    xray:
+      enabled: true
+      max-violations: 20
+      # Threshold for suspicious ore-to-stone ratio
+      suspicious-ratio: 0.4
+      # Minimum ores mined before analysis kicks in
+      min-ores-tracked: 15
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (XRay)"
+
+  # ========================================
+  # Packet Checks
+  # ========================================
+  packet:
+    packetrate:
+      enabled: true
+      max-violations: 10
+      # Max packets per second
+      max-packets-per-second: 500
+      punish-command: "kick %player% &cCLDAC: Unfair Advantage (Timer)"
